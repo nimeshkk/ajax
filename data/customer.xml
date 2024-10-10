@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<customers>
+    <customer>
+        <id>12345</id>
+        <email>john@example.com</email>
+        <fname>John</fname>
+        <lname>Doe</lname>
+        <password>password123</password>
+        <phone>1234567890</phone>
+    </customer>
+    <customer>
+        <id>66feab8091438</id>
+        <email>test@gmail.com</email>
+        <fname>test</fname>
+        <lname>test2</lname>
+        <password>12345678</password>
+        <phone>0719999999</phone>
+    </customer>
+    <customer>
+        <id>66ffdf3e8de81</id>
+        <email>hello@gmail.com</email>
+        <fname>hello</fname>
+        <lname>bye</lname>
+        <password>12345678</password>
+        <phone>+987 654 3210</phone>
+    </customer>
+</customers>

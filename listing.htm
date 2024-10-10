@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Item Listing</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f4f8;
+            display: flex;
+            flex-direction: column; 
+        }
+
+        /* Navbar styling */
+        .navbar {
+            background-color: #f7f7f7; 
+            padding: 10px 0;
+            display: flex;
+            justify-content: center; 
+            position: fixed; 
+            width: 100%; 
+            top: 0; 
+            z-index: 1000; 
+        }
+        
+        .nav-list {
+            list-style: none; 
+            padding: 0;
+            margin: 0;
+            display: flex; 
+        }
+        
+        .nav-list li {
+            margin: 0 15px; 
+        }
+        
+        .nav-list a {
+            background-color: #2676ca; 
+            text-decoration: none; 
+            color: white; 
+            padding: 10px; 
+            border-radius: 5px; 
+            transition: background-color 0.3s; 
+        }
+        
+        .nav-list a:hover {
+            background-color: #12944a; 
+        }
+
+        /* Main Container */
+        .form-container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            width: 70%;
+            max-width: 800px; 
+            text-align: center;
+            display: flex;
+            align-items: center;
+            position: relative;
+            margin-top: 80px; 
+            margin-left: auto; 
+            margin-right: auto; 
+        }
+
+        .right-img {
+            width: 300px;
+            height: auto;
+            margin-left: 20px;
+        }
+
+        .form-content {
+            flex: 1;
+            text-align: left;
+        }
+
+        h2 {
+            color: #333;
+            font-size: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        input[type="text"], input[type="number"], textarea {
+            width: 90%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-sizing: border-box;
+            transition: border-color 0.3s ease;
+        }
+
+        input:focus, textarea:focus {
+            border-color: #63b3ed;
+            outline: none;
+            box-shadow: 0 0 5px rgba(99, 179, 237, 0.3);
+        }
+
+        button[type="submit"] {
+            background-color: #63b3ed;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s ease-in-out;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #3182ce;
+        }
+
+        a {
+            display: inline-block;
+            margin-top: 10px;
+            color: #d62629;
+            text-decoration: none;
+            transition: color 0.3s ease-in-out;
+        }
+
+        a:hover {
+            color: #ffffff;
+        }
+
+        /* Responsive Layout */
+        @media (max-width: 900px) {
+            .form-container {
+                flex-direction: column;
+                width: 90%;
+                padding: 20px;
+                margin-top: 90px; 
+            }
+
+            .right-img {
+                margin-left: 0;
+                margin-top: 20px;
+            }
+           
+            input[type="text"], input[type="number"], textarea {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <ul class="nav-list">
+            <li><a href="buying.htm">Buying</a></li>
+            <li><a href="processing.htm">Processing</a></li>
+            <li><a href="mlogout.htm">Logout</a></li>
+        </ul>
+    </nav>
+    <div class="form-container">
+        <div class="form-content">
+            <h2>Add New Item</h2>
+            <form action="listing.php" method="POST">
+                <label for="itemname">Item Name:</label>
+                <input type="text" id="itemname" name="itemname" required>
+                
+                <label for="price">Unit Price:</label>
+                <input type="text" id="price" name="price" required>
+                
+                <label for="quantity">Quantity Available:</label>
+                <input type="number" id="quantity" name="quantity" required>
+                
+                <label for="description">Description:</label>
+                <textarea id="description" name="description" required></textarea>
+                
+                <button type="submit">Add Item</button>
+            </form>
+        </div>
+        <img src="images/s1.png" alt="Side Image" class="right-img">
+    </div>
+</body>
+</html>

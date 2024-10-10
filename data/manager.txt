@@ -1,0 +1,3 @@
+manager1,12345678
+manager2,abcd
+manager3,pass789

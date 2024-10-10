@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?><items>
+    <item>
+        <id>1</id>
+        <name>MSI Laptop</name>
+        <price>500</price>
+        <quantity>10</quantity>
+        <description>
+            <p>MSI Laptop</p>
+            <p>Intel Core i7 10th Gen</p>
+            <p>16GB RAM</p>
+            <p>1TB SSD</p>
+            <p>15.6" FHD Display</p>
+        </description>
+        <soldQuantity>5</soldQuantity>
+        <onHold>0</onHold>
+    </item>
+    <item>
+        <id>2</id>
+        <name>iphone 16 pro</name>
+        <price>999</price>
+        <quantity>18</quantity>
+        <description>
+            <p>iphone 16 pro</p>
+            <p>6.1" Super Retina XDR Display</p>
+            <p>Apple A14 Bionic Chip</p>
+            <p>12MP + 12MP Dual Camera</p>
+            <p>5G</p>
+        </description>
+        <soldQuantity>2</soldQuantity>
+        <onHold>0</onHold>
+    </item>
+    <item>
+        <id>3</id>
+        <name>s24 ultra</name>
+        <price>900</price>
+        <quantity>120</quantity>
+        <description>
+            <p>s24 ultra</p>
+            <p>6.8" Quad HD+ Dynamic AMOLED 2X Display</p>
+            <p>12GB RAM</p>
+            <p>108MP + 12MP + 10MP + 10MP Quad Camera</p>
+            <p>5000mAh Battery</p>
+        </description>
+        <soldQuantity>0</soldQuantity>
+        <onHold>0</onHold>
+    </item>
+    
+<item><id>4</id><name>laptop</name><price>900</price><quantity>90</quantity><description>ghghgh</description><soldQuantity>0</soldQuantity><onHold>0</onHold></item></items>

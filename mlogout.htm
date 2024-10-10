@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manager Logout</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .logout-container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        h1 {
+            color: #63b3ed;
+        }
+        p {
+            color: #333;
+            font-size: 8px;
+        }
+        a {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #63b3ed;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        a:hover {
+            background-color: #22b95c;
+        }
+    </style>
+</head>
+<body>
+    <div class="logout-container">
+        <h1>Logout Successful</h1>
+        <p>Manager ID: <span id="managerId"></span></p>
+        <a href="buyonline.htm">Back to BuyOnline</a>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const managerId = urlParams.get('id');
+            
+            const managerIdElement = document.getElementById('managerId');
+            if (managerId && managerId.trim() !== '' && managerId !== 'notavailable') {
+                managerIdElement.textContent = managerId;
+            } else {
+                managerIdElement.textContent = 'manager1';
+            }
+        });
+    </script>
+</body>
+</html>

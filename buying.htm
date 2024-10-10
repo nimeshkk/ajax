@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buy Items</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f7f7f7;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1, h2 {
+            text-align: center;
+            color: #333;
+        }
+
+        table {
+            width: 80%;
+            margin: 20px auto;
+            border-collapse: collapse;
+            background-color: white;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #63b3ed;
+            color: white;
+        }
+
+        td {
+            color: #333;
+        }
+
+        button {
+            padding: 10px 15px;
+            background-color: #63b3ed;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-right: 10px;
+        }
+        
+        button:hover {
+            background-color: #45a049;
+        }
+
+        a {
+            display: block;
+            margin: 20px auto;
+            text-align: center;
+            text-decoration: none;
+            color: #022a47;
+            font-weight: bold;
+        }
+
+        a:hover {
+            color: #179764;
+        }
+
+        #cart {
+            text-align: center;
+            margin-top: 40px;
+        }
+
+        #cart h2 {
+            color: #444;
+        }
+
+        #cart table {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        #cart h3 {
+            margin-top: 10px;
+            color: #179764;
+        }
+
+        #cart button {
+            margin-right: 10px;
+        }
+    </style>
+    <script>
+        let cart = [];
+
+        function loadItems() {
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', 'goods.php', true);
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState == 4 && xhr.status == 200) {
+                    var xml = xhr.responseXML;
+                    var items = xml.getElementsByTagName('item');
+                    var output = `
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Item Name</th>
+                                <th>Price</th>
+                                <th>Available</th>
+                                <th>On Hold</th>
+                                <th>Description</th>
+                                <th>Add to Cart</th>
+                            </tr>
+                        </thead>
+                        <tbody>`;
+                    
+                    for(var i = 0; i < items.length; i++) {
+                        var id = items[i].getElementsByTagName('id')[0].textContent;
+                        var name = items[i].getElementsByTagName('name')[0].textContent;
+                        var price = parseFloat(items[i].getElementsByTagName('price')[0].textContent);
+                        var quantity = parseInt(items[i].getElementsByTagName('quantity')[0].textContent);
+                        var onHold = parseInt(items[i].getElementsByTagName('onHold')[0].textContent) || 0;
+                        var description = items[i].getElementsByTagName('description')[0].textContent;
+        
+                        output += `<tr data-itemname="${name}">
+                            <td>${id}</td>
+                            <td>${name}</td>
+                            <td>$${price.toFixed(2)}</td>
+                            <td class="item-quantity">${quantity}</td>
+                            <td class="item-on-hold">${onHold}</td>
+                            <td>${description}</td>
+                            <td><button onclick="addOneToCart('${name}', ${price}, ${quantity})" ${quantity <= 0 ? 'disabled' : ''}>
+                                ${quantity <= 0 ? 'Out of Stock' : 'Add One to Cart'}
+                            </button></td>
+                        </tr>`;
+                    }
+                    output += '</tbody></table>';
+                    document.getElementById('items').innerHTML = output;
+                }
+            };
+            xhr.send();
+        }
+
+        function addOneToCart(itemName, price, quantity) {
+            const itemRow = document.querySelector(`tr[data-itemname="${itemName}"]`);
+            const quantityCell = itemRow.querySelector('.item-quantity');
+            const onHoldCell = itemRow.querySelector('.item-on-hold');
+        
+            let currentQuantity = parseInt(quantityCell.textContent);
+            let currentOnHold = parseInt(onHoldCell.textContent);
+        
+            if (currentQuantity <= 0) {
+                alert("Sorry, this item is not available for sale");
+                return;
+            }
+        
+            const existingItem = cart.find(item => item.name === itemName);
+            if (existingItem) {
+                existingItem.quantity += 1;
+            } else {
+                cart.push({ name: itemName, price: price, quantity: 1 });
+            }
+        
+            currentQuantity -= 1;
+            currentOnHold += 1;
+            quantityCell.textContent = currentQuantity;
+            onHoldCell.textContent = currentOnHold;
+        
+            if (currentQuantity <= 0) {
+                const addButton = itemRow.querySelector('button');
+                addButton.disabled = true;
+                addButton.textContent = 'Out of Stock';
+            }
+        
+            updateCartDisplay();
+            updateXMLOnHold(itemName, 1);
+        }
+
+        function updateXMLOnHold(itemName, quantityChange) {
+            fetch('updateOnHold.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ name: itemName, quantity: quantityChange }),
+            })
+            .then(response => response.text())
+            .then(data => console.log(data))
+            .catch(error => console.error('Error updating on hold quantity:', error));
+        }
+
+        function updateCartDisplay() {
+            let cartOutput = '<h2>Your Shopping Cart</h2><table><thead><tr><th>Item Name</th><th>Quantity</th><th>Price</th><th>Action</th></tr></thead><tbody>';
+            let totalAmount = 0;
+
+            cart.forEach(item => {
+                totalAmount += item.price * item.quantity;
+                cartOutput += `<tr><td>${item.name}</td><td>${item.quantity}</td><td>$${item.price.toFixed(2)}</td>
+                               <td><button onclick="removeFromCart('${item.name}')">Remove from Cart</button></td></tr>`;
+            });
+
+            cartOutput += '</tbody></table>';
+            cartOutput += `<h3>Total Amount: $${totalAmount.toFixed(2)}</h3>`;
+            cartOutput += `<button onclick="confirmPurchase()">Confirm Purchase</button>`;
+            cartOutput += `<button onclick="cancelPurchase()">Cancel Purchase</button>`;
+
+            document.getElementById('cart').innerHTML = cartOutput;
+        }
+
+        function removeFromCart(itemName) {
+            const itemIndex = cart.findIndex(item => item.name === itemName);
+            if (itemIndex > -1) {
+                const removedItem = cart.splice(itemIndex, 1)[0];
+                updateItemQuantity(itemName, removedItem.quantity);
+                updateXMLOnHold(itemName, -removedItem.quantity);
+            }
+
+            updateCartDisplay();
+        }
+
+        function updateItemQuantity(itemName, quantityChange) {
+            const itemRow = document.querySelector(`tr[data-itemname="${itemName}"]`);
+            if (itemRow) {
+                const quantityCell = itemRow.querySelector('.item-quantity');
+                const onHoldCell = itemRow.querySelector('.item-on-hold');
+                let currentQuantity = parseInt(quantityCell.textContent);
+                let currentOnHold = parseInt(onHoldCell.textContent);
+                
+                currentQuantity += quantityChange;
+                currentOnHold -= quantityChange;
+                
+                quantityCell.textContent = currentQuantity;
+                onHoldCell.textContent = currentOnHold;
+
+                const addButton = itemRow.querySelector('button');
+                if (currentQuantity > 0) {
+                    addButton.disabled = false;
+                    addButton.textContent = 'Add One to Cart';
+                }
+            }
+        }
+
+        function confirmPurchase() {
+            if (cart.length === 0) {
+                alert("Your cart is empty. Please add items before confirming purchase.");
+                return;
+            }
+
+            let totalAmount = 0;
+            const soldItems = cart.map(item => {
+                totalAmount += item.price * item.quantity;
+                return { name: item.name, quantity: item.quantity };
+            });
+
+            fetch('updateGoods.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(soldItems),
+            })
+            .then(response => response.text())
+            .then(data => {
+                alert(`Your purchase has been confirmed and the total amount due is $${totalAmount.toFixed(2)}`);
+                cart = [];
+                updateCartDisplay();
+                loadItems();
+                location.reload();
+            })
+            .catch(error => {
+                console.error('Error updating XML:', error);
+                alert("There was an error processing your purchase. Please try again.");
+            });
+        }
+
+        function cancelPurchase() {
+            if (cart.length === 0) {
+                alert("Your cart is empty. No purchase to cancel.");
+                return;
+            }
+
+            const itemsToCancel = cart.map(item => ({ name: item.name, quantity: item.quantity }));
+
+            fetch('cancelPurchase.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(itemsToCancel),
+            })
+            .then(response => response.text())
+            .then(data => {
+                alert("Your purchase request has been cancelled. Welcome to shop next time.");
+                cart = [];
+                updateCartDisplay();
+                loadItems();
+                location.reload();
+            })
+            .catch(error => {
+                console.error('Error cancelling purchase:', error);
+                alert("There was an error cancelling your purchase. Please try again.");
+            });
+        }
+    </script>
+</head>
+<body onload="loadItems()">
+    <h1>Buy Items</h1>
+    <div id="items"></div>
+    <div id="cart"></div>
+    <a href="buyonline.htm">Back to Home</a>
+</body>
+</html>

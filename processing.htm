@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Process Sold Items</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        h2 {
+            color: #333;
+            text-align: center;
+            margin-top: 60px;
+        }
+
+        table {
+            width: 90%;
+            max-width: 800px;
+            padding: 20px;
+            border-collapse: collapse;
+            margin: 20px auto;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        th, td {
+            padding: 20px;
+            text-align: center;
+        }
+
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #63b3ed;
+            color: white;
+            font-weight: bold;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        tr:hover {
+            background-color: #e9e9e9;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #28a745;
+            width: 200px;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            border-radius: 5px;
+            transition: background-color 0.3s, transform 0.2s;
+            margin: 20px auto;
+            display: block;
+        }
+
+        button:hover {
+            background-color: #218838;
+            transform: translateY(-2px);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body>
+
+<h2>Items with Sold and On-hold Quantities</h2>
+<div id="items"></div>
+<button onclick="processSoldItems()">Process</button>
+
+<script>
+    // Load items with non-zero sold or on-hold quantities
+    function loadItems() {
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', 'goods.php', true);
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState == 4 && xhr.status == 200) {
+                var xml = xhr.responseXML;
+                var items = xml.getElementsByTagName('item');
+                var output = `
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Item Number</th>
+                                <th>Item Name</th>
+                                <th>Price</th>
+                                <th>Quantity Available</th>
+                                <th>On Hold</th>
+                                <th>Quantity Sold</th>
+                            </tr>
+                        </thead>
+                        <tbody>`;
+
+                for (var i = 0; i < items.length; i++) {
+                    var id = items[i].getElementsByTagName('id')[0].textContent;
+                    var name = items[i].getElementsByTagName('name')[0].textContent;
+                    var price = parseFloat(items[i].getElementsByTagName('price')[0].textContent);
+                    var quantity = parseInt(items[i].getElementsByTagName('quantity')[0].textContent);
+                    var onHold = parseInt(items[i].getElementsByTagName('onHold')[0].textContent || '0');
+                    var soldQuantity = parseInt(items[i].getElementsByTagName('soldQuantity')[0].textContent || '0');
+
+                    // Only show items with sold or on-hold quantities
+                    if (soldQuantity > 0 || onHold > 0) {
+                        output += `<tr data-id="${id}">
+                            <td>${id}</td>
+                            <td>${name}</td>
+                            <td>$${price.toFixed(2)}</td>
+                            <td>${quantity}</td>
+                            <td>${onHold}</td>
+                            <td>${soldQuantity}</td>
+                        </tr>`;
+                    }
+                }
+
+                output += '</tbody></table>';
+                document.getElementById('items').innerHTML = output;
+            }
+        };
+        xhr.send();
+    }
+
+    // Process sold items: clear soldQuantity and update onHold, remove items with zero quantity and onHold
+    function processSoldItems() {
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', 'goods.php', true);
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState == 4 && xhr.status == 200) {
+                var xml = xhr.responseXML;
+                var items = xml.getElementsByTagName('item');
+                var itemsToRemove = []; // Array to keep track of items to remove
+
+                // Iterate over items and update sold and on-hold quantities
+                for (var i = 0; i < items.length; i++) {
+                    var item = items[i];
+                    var soldQuantity = parseInt(item.getElementsByTagName('soldQuantity')[0].textContent || '0');
+                    var quantity = parseInt(item.getElementsByTagName('quantity')[0].textContent || '0');
+                    var onHold = parseInt(item.getElementsByTagName('onHold')[0].textContent || '0');
+
+                    if (onHold > 0) {
+                        // Transfer onHold to soldQuantity
+                        soldQuantity += onHold;
+                        item.getElementsByTagName('soldQuantity')[0].textContent = soldQuantity;
+
+                        // Clear onHold
+                        item.getElementsByTagName('onHold')[0].textContent = 0;
+                    }
+
+                    // If quantity and onHold are both 0, mark the item for removal
+                    if (quantity === 0 && onHold === 0) {
+                        itemsToRemove.push(item); // Add to removal list
+                    }
+                }
+
+                // Remove items with zero quantity and onHold
+                for (var i = 0; i < itemsToRemove.length; i++) {
+                    itemsToRemove[i].parentNode.removeChild(itemsToRemove[i]);
+                }
+
+                // Save updated XML back to the server (requires server-side processing)
+                var xhrSave = new XMLHttpRequest();
+                xhrSave.open('POST', 'saveGoods.php', true); // Implement saveGoods.php on the server
+                xhrSave.setRequestHeader('Content-Type', 'application/xml');
+                xhrSave.send(new XMLSerializer().serializeToString(xml));
+
+                // Notify the user and refresh the page
+                alert('Processing completed successfully.');
+                location.reload(); // Refresh the page
+            }
+        };
+        xhr.send();
+    }
+
+    // Load the items on page load
+    window.onload = function () {
+        loadItems();
+    };
+</script>
+<a href="listing.htm">Back</a>
+
+</body>
+</html>

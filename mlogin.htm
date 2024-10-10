@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manager Login</title>
+    <style>
+        /* General Styling */
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            background-color: #f4f4f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        h2 {
+            color: #63b3ed;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        /* Main Container */
+        .main-container {
+            display: flex;
+            align-items: center;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            width: 60%;
+            height: 80%;
+        }
+
+        /* Form Container */
+        .form-container {
+            flex: 1;
+            padding-left: 20px;
+        }
+
+        form {
+            display: grid;
+            gap: 10px;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            color: #333;
+        }
+
+        input[type="text"], input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+
+        input:focus {
+            border-color: #63b3ed;
+            outline: none;
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
+        }
+
+        button[type="submit"] {
+            background-color: #63b3ed;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            transition: background-color 0.3s ease-in-out;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #22b95c;
+        }
+
+        a {
+            display: block;
+            margin-top: 20px;
+            color: #63b3ed;
+            text-align: center;
+            text-decoration: none;
+            transition: color 0.3s ease-in-out;
+        }
+
+        a:hover {
+            color: #63b3ed;
+        }
+
+        /* Image Section */
+        .image-section {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .image-section img {
+            max-width: 80%;
+            height: auto;
+            border-radius: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <div class="image-section">
+            <img src="images/s3.png" alt="Manager Login Image">
+        </div>
+        <div class="form-container">
+            <h2>Manager Login</h2>
+            <form action="mlogin.php" method="POST">
+                <label for="mid">Manager ID:</label>
+                <input type="text" id="mid" name="mid" required>
+                
+                <label for="mpassword">Password:</label>
+                <input type="password" id="mpassword" name="mpassword" required>
+                
+                <button type="submit">Login</button>
+            </form>
+            <a href="buyonline.htm">Back to BuyOnline</a>
+        </div>
+    </div>
+</body>
+</html>
